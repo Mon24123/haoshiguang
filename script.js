@@ -2,7 +2,7 @@ const STORAGE_KEY = "focus-widget:v1";
 const DEFAULT_TASKS = ["阅读/学习", "项目推进", "运动", "整理记录", "每日复盘"];
 const DEFAULT_CATEGORIES = ["工作", "学习", "项目", "生活", "健康", "其他"];
 const DEFAULT_THEME_COLOR = "#6c5ce7";
-const APP_VERSION = "0.2.0";
+const APP_VERSION = "0.2.1";
 const CATEGORY_HUE_OFFSETS = [0, 42, 318, 198, 82, 142, 274, 24, 226, 302, 118, 176, 16, 250];
 
 const $ = (selector) => document.querySelector(selector);
@@ -1939,6 +1939,12 @@ function getPeriodRangeText(periodLabel) {
 }
 
 function buildCategoryDetailTable(periodLabel) {
+  return buildCategoryDetailRows(periodLabel)
+    .map((row) => row.map((cell) => String(cell).replace(/\t/g, " ").replace(/\r?\n/g, " ")).join("\t"))
+    .join("\n");
+}
+
+function buildCategoryDetailRows(periodLabel) {
   const totals = getCategoryTotalsByPeriodLabel(periodLabel);
   const rangeText = getPeriodRangeText(periodLabel);
   const rows = [["周期", "日期范围", "日期", "分类", "事件", "备注", "分钟", "时长"]];
@@ -1955,7 +1961,7 @@ function buildCategoryDetailTable(periodLabel) {
     });
   });
 
-  return rows.map((row) => row.map((cell) => String(cell).replace(/\t/g, " ").replace(/\r?\n/g, " ")).join("\t")).join("\n");
+  return rows;
 }
 
 async function copyCategoryDetailTable(periodLabel = selectedCategoryDetailPeriod || "日") {
@@ -1963,6 +1969,33 @@ async function copyCategoryDetailTable(periodLabel = selectedCategoryDetailPerio
   await navigator.clipboard.writeText(text);
   showToast(`已复制${periodLabel}分类表格`);
 }
+
+function csvCell(value) {
+  const text = String(value ?? "").replace(/\r?\n/g, " ");
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, "\"\"")}"` : text;
+}
+
+function getCategoryCsvFileName(periodLabel) {
+  const range = getPeriodRangeText(periodLabel).replace(/\s+至\s+/g, "_to_").replace(/[^\d_to-]/g, "");
+  const periodName = periodLabel === "日" ? "day" : periodLabel === "周" ? "week" : "month";
+  return `haoshiguang-${periodName}-${range || selectedDateKey}.csv`;
+}
+
+function downloadCategoryDetailCsv(periodLabel = selectedCategoryDetailPeriod || "日") {
+  const rows = buildCategoryDetailRows(periodLabel);
+  const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\n")}`;
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = getCategoryCsvFileName(periodLabel);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  showToast(`已导出${periodLabel}CSV`);
+}
+
 function renderPeriodCategoryTasks(periodLabel, category, duration, percent) {
   const relatedTasks = getTaskTotalsForCategoryPeriod(periodLabel, category);
   const rows = relatedTasks.length
@@ -2048,7 +2081,10 @@ function renderCategoryDetail(periodLabel) {
   detail.innerHTML = `
     <div class="category-detail-head">
       <span>${escapeHtml(periodLabel)}分类明细</span>
-      <button class="category-export-button" type="button" data-category-export="${escapeHtml(periodLabel)}">复制表格</button>
+      <span class="category-detail-actions">
+        <button class="category-export-button" type="button" data-category-export="${escapeHtml(periodLabel)}">复制表格</button>
+        <button class="category-export-button" type="button" data-category-csv="${escapeHtml(periodLabel)}">导出 CSV</button>
+      </span>
     </div>
     <div class="category-list">
       ${totals
@@ -2839,12 +2875,18 @@ elements.recordList.addEventListener("click", (event) => {
 
 elements.categoryStats.addEventListener("click", (event) => {
   const exportButton = event.target.closest("[data-category-export]");
-  if (!exportButton) {
+  const csvButton = event.target.closest("[data-category-csv]");
+  if (!exportButton && !csvButton) {
     return;
   }
 
   event.preventDefault();
   event.stopPropagation();
+  if (csvButton) {
+    downloadCategoryDetailCsv(csvButton.dataset.categoryCsv);
+    return;
+  }
+
   copyCategoryDetailTable(exportButton.dataset.categoryExport);
 });
 elements.categoryStats.addEventListener("pointerover", (event) => {

@@ -1414,6 +1414,13 @@ body.compact-mode .compact-only:hover {
   gap: 10px;
 }
 
+.category-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .category-export-button {
   min-height: 30px;
   padding: 0 10px;

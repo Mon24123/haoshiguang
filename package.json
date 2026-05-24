@@ -1,6 +1,6 @@
 {
   "name": "focus-widget",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "A tiny desktop focus timer and daily task widget.",
   "main": "main.js",
