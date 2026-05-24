@@ -2575,39 +2575,6 @@ elements.taskList.addEventListener("click", (event) => {
   }
 });
 
-function positionRecordHoverCard(segment) {
-  const card = segment?.querySelector(".record-hover-card");
-  if (!card) {
-    return;
-  }
-
-  const rect = segment.getBoundingClientRect();
-  const itemRect = segment.closest(".record-item")?.getBoundingClientRect() || rect;
-  const width = Math.min(420, Math.max(280, itemRect.width - 32), window.innerWidth - 32);
-  const estimatedHeight = Math.max(210, card.offsetHeight || 210);
-  const left = Math.min(Math.max(16, itemRect.left + 24), window.innerWidth - width - 16);
-  let top = rect.bottom + 8;
-  if (top + estimatedHeight > window.innerHeight - 16) {
-    top = Math.max(16, rect.top - estimatedHeight - 8);
-  }
-
-  card.style.setProperty("--hover-card-left", `${Math.round(left)}px`);
-  card.style.setProperty("--hover-card-top", `${Math.round(top)}px`);
-}
-
-elements.recordList.addEventListener("pointerover", (event) => {
-  const segment = event.target.closest(".record-segment");
-  if (segment) {
-    positionRecordHoverCard(segment);
-  }
-});
-
-elements.recordList.addEventListener("focusin", (event) => {
-  const segment = event.target.closest(".record-segment");
-  if (segment) {
-    positionRecordHoverCard(segment);
-  }
-});
 elements.recordList.addEventListener("click", (event) => {
   const titleEditButton = event.target.closest("[data-record-title-edit]");
   if (titleEditButton) {
