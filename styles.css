@@ -125,8 +125,6 @@ select:focus {
   position: static;
   height: calc(100vh - 64px);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .widget-header,
@@ -160,13 +158,12 @@ select:focus {
   font-variant-numeric: tabular-nums;
 }
 
-.widget-footer {
-  margin-top: auto;
-  padding: 0 22px 18px;
+.app-footer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 6px;
+  padding: 4px 2px 18px;
 }
 
 .contact-label {
@@ -597,7 +594,7 @@ body.has-active-task .active-progress span {
 }
 
 .finish-note {
-  min-height: 112px;
+  min-height: 148px;
   margin-top: 10px;
 }
 
@@ -955,7 +952,7 @@ body.compact-mode .compact-only:hover {
   left: var(--hover-card-left, 16px);
   top: var(--hover-card-top, 16px);
   z-index: 120;
-  width: min(360px, calc(100vw - 32px));
+  width: min(420px, calc(100vw - 32px));
   display: grid;
   gap: 8px;
   padding: 10px;
@@ -1621,11 +1618,7 @@ body.compact-mode .eyebrow {
 }
 
 body.compact-mode .finish-note {
-  min-height: 136px;
-}
-
-body.compact-mode .widget-footer {
-  padding: 0 18px 14px;
+  min-height: 172px;
 }
 
 body.compact-mode .date-nav {

@@ -2582,9 +2582,10 @@ function positionRecordHoverCard(segment) {
   }
 
   const rect = segment.getBoundingClientRect();
-  const width = Math.min(360, Math.max(260, window.innerWidth - 32));
-  const estimatedHeight = 210;
-  const left = Math.min(Math.max(16, rect.left), window.innerWidth - width - 16);
+  const itemRect = segment.closest(".record-item")?.getBoundingClientRect() || rect;
+  const width = Math.min(420, Math.max(280, itemRect.width - 32), window.innerWidth - 32);
+  const estimatedHeight = Math.max(210, card.offsetHeight || 210);
+  const left = Math.min(Math.max(16, itemRect.left + 24), window.innerWidth - width - 16);
   let top = rect.bottom + 8;
   if (top + estimatedHeight > window.innerHeight - 16) {
     top = Math.max(16, rect.top - estimatedHeight - 8);
