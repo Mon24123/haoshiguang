@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>好时光入口</title>
+    <link rel="stylesheet" href="./bubble.css" />
+  </head>
+  <body>
+    <section id="miniWidget" class="mini-widget" aria-label="好时光迷你窗口">
+      <button id="timerButton" class="timer-card" type="button" aria-label="打开好时光">
+        <span id="miniTitle" class="mini-title">准备记录</span>
+        <span id="miniTime" class="mini-time">00:00:00</span>
+      </button>
+      <button id="hideBubbleButton" class="hide-bubble-button" type="button" aria-label="隐藏桌面卡片">×</button>
+      <button id="controlButton" class="status-button" type="button" aria-label="展开计时控制"><span class="status-dot"></span></button>
+      <button id="collapseButton" class="drag-handle" type="button" aria-label="展开快捷操作">••</button>
+      <section id="expandedPanel" class="expanded-panel" aria-label="快捷操作">
+        <div id="controlPanel" class="quick-control-row">
+          <button id="pauseFromBubble" type="button">暂停</button>
+          <button id="finishFromBubble" type="button">结束</button>
+        </div>
+        <form id="quickNoteForm" class="quick-note-form">
+          <textarea id="quickNoteInput" rows="2" placeholder="在这里记一点感受或备忘"></textarea>
+          <button type="submit">记下</button>
+          <span id="quickNoteStatus" class="quick-note-status" aria-live="polite"></span>
+        </form>
+        <div class="task-drawer-head">
+          <span>快速开始</span>
+          <button id="openFullFromBubble" class="full-link" type="button">完整面板</button>
+        </div>
+        <div id="categoryDrawerList" class="category-drawer-list"></div>
+        <div id="taskDrawerList" class="task-drawer-list"></div>
+        <form id="quickStartForm" class="quick-start-form">
+          <input id="quickTaskInput" type="text" autocomplete="off" placeholder="直接输入任务" />
+          <button type="submit">开始</button>
+        </form>
+        <button id="quitFromBubble" class="quit-link" type="button">退出好时光</button>
+      </section>
+    </section>
+
+    <script src="./bubble.js"></script>
+  </body>
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>好时光</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="widget" aria-label="桌面计时挂件">
+        <header class="widget-header">
+          <div>
+            <p class="eyebrow">Good Time</p>
+            <h1>好时光</h1>
+          </div>
+          <div class="header-actions">
+            <label class="theme-picker" aria-label="选择主题色">
+              <input id="themeColorInput" type="color" value="#6c5ce7" />
+            </label>
+            <button type="button" id="openFullButton" class="ghost compact-only">完整面板</button>
+            <input id="datePicker" class="date-picker" type="date" aria-label="选择日期" />
+          </div>
+        </header>
+        <nav class="date-nav" aria-label="日期切换">
+          <button type="button" id="prevDayButton" class="ghost">昨天</button>
+          <button type="button" id="todayButton" class="ghost">今天</button>
+          <button type="button" id="nextDayButton" class="ghost">明天</button>
+        </nav>
+
+        <section class="timer-panel" aria-label="当前事项">
+          <div class="timer-topline">
+            <p class="timer-label">当前事项</p>
+            <time id="liveClock" class="live-clock" aria-label="当前时间">--:--</time>
+          </div>
+          <h2 id="currentTitle">还没有开始</h2>
+          <div id="timerDisplay" class="timer-display">00:00:00</div>
+          <div class="active-progress" aria-hidden="true"><span></span></div>
+          <form id="timerForm" class="quick-form">
+            <label class="sr-only" for="activityInput">输入当前事项</label>
+            <input id="activityInput" type="text" autocomplete="off" placeholder="现在要做什么？" />
+            <label class="sr-only" for="activityCategory">输入分类</label>
+            <input id="activityCategory" type="text" autocomplete="off" placeholder="分类" aria-label="输入当前事项分类" />
+            <button type="submit" id="startButton">开始</button>
+          </form>
+          <div id="activityCategorySuggestions" class="suggestion-row" aria-label="当前事项分类建议"></div>
+          <div class="timer-actions" aria-label="计时控制">
+            <button type="button" id="pauseButton" class="secondary">暂停</button>
+            <button type="button" id="finishButton" class="secondary danger">结束</button>
+          </div>
+          <label class="sr-only" for="finishNote">结束备注</label>
+          <textarea id="finishNote" class="finish-note" rows="2" placeholder="可以在这里写一点备注或感受"></textarea>
+        </section>
+
+        <section class="today-summary" aria-label="今日概览">
+          <div>
+            <span>今日已记录</span>
+            <strong id="totalTime">0 分钟</strong>
+          </div>
+          <div>
+            <span>完成任务</span>
+            <strong id="doneCount">0/0</strong>
+          </div>
+          <div>
+            <span>记录条数</span>
+            <strong id="entryCount">0</strong>
+          </div>
+        </section>
+      </section>
+
+      <section class="workspace" aria-label="任务和记录">
+        <section class="panel tasks-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Tasks</p>
+              <h2 id="taskPanelTitle">今日任务</h2>
+            </div>
+          </div>
+
+          <div class="daily-template-toolbar">
+            <button type="button" id="toggleDailyTasksButton" class="secondary">查看/修改每日任务</button>
+          </div>
+          <section id="dailyTasksPanel" class="daily-tasks-panel" hidden>
+            <form id="dailyTemplateForm" class="daily-task-form">
+              <label class="sr-only" for="dailyTaskName">每日固定任务名称</label>
+              <input id="dailyTaskName" type="text" autocomplete="off" placeholder="固定任务名称" />
+              <label class="sr-only" for="dailyTaskCategory">每日固定任务分类</label>
+              <select id="dailyTaskCategory" aria-label="选择固定任务分类"></select>
+              <label class="sr-only" for="dailyTaskTime">固定时间</label>
+              <input id="dailyTaskTime" type="time" aria-label="固定时间，可不填" />
+              <label class="sr-only" for="dailyTaskMinutes">预计时长</label>
+              <input id="dailyTaskMinutes" type="number" min="1" step="1" placeholder="预计分钟" aria-label="预计时长，可不填" />
+              <button type="submit" id="seedTasksButton">添加固定任务</button>
+            </form>
+            <ul id="dailyTasksList" class="daily-tasks-list"></ul>
+          </section>
+
+          <form id="taskForm" class="task-form">
+            <label class="sr-only" for="taskInput">新增任务</label>
+            <input id="taskInput" type="text" autocomplete="off" placeholder="添加今天的任务" />
+            <label class="sr-only" for="taskCategory">输入任务分类</label>
+            <input id="taskCategory" type="text" autocomplete="off" placeholder="分类" aria-label="输入任务分类" />
+            <button type="submit">添加</button>
+          </form>
+          <div id="taskCategorySuggestions" class="suggestion-row" aria-label="任务分类建议"></div>
+
+          <ul id="taskList" class="task-list"></ul>
+        </section>
+
+        <section class="panel todo-pool-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Later</p>
+              <h2>待办池</h2>
+            </div>
+          </div>
+          <form id="todoPoolForm" class="todo-pool-form">
+            <label class="sr-only" for="todoTitle">待办名称</label>
+            <input id="todoTitle" type="text" autocomplete="off" placeholder="以后要做的事" />
+            <label class="sr-only" for="todoCategory">待办分类</label>
+            <input id="todoCategory" type="text" autocomplete="off" placeholder="分类" />
+            <label class="sr-only" for="todoDueDate">截止日期</label>
+            <input id="todoDueDate" type="date" aria-label="截止日期，可不填" />
+            <button type="submit">加入</button>
+          </form>
+          <div id="todoCategorySuggestions" class="suggestion-row" aria-label="待办分类建议"></div>
+          <ul id="todoPoolList" class="todo-pool-list"></ul>
+        </section>
+
+        <section class="panel categories-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Categories</p>
+              <h2>分类统计</h2>
+            </div>
+          </div>
+
+          <div id="categoryStats" class="category-stats"></div>
+        </section>
+
+        <section class="panel records-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Timeline</p>
+              <h2>时间记录</h2>
+            </div>
+            <button type="button" id="copyReportButton" class="ghost">复制日报</button>
+          </div>
+
+          <form id="manualRecordForm" class="manual-form">
+            <label class="sr-only" for="manualTitle">补记事项</label>
+            <input id="manualTitle" type="text" autocomplete="off" placeholder="补记事项" />
+            <label class="sr-only" for="manualCategory">补记分类</label>
+            <input id="manualCategory" type="text" autocomplete="off" placeholder="分类" />
+            <label class="sr-only" for="manualMinutes">补记分钟数</label>
+            <input id="manualMinutes" type="number" min="1" step="1" inputmode="numeric" placeholder="分钟" />
+            <button type="submit">补记</button>
+          </form>
+          <div id="manualCategorySuggestions" class="suggestion-row" aria-label="补记分类建议"></div>
+
+          <div id="recordList" class="record-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
