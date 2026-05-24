@@ -820,7 +820,7 @@ function recordActiveActivity({ completeTask }) {
   day.active = null;
   elements.finishNote.value = "";
   saveState();
-  render();
+  render({ forceActiveSync: true });
 }
 
 function findTaskForActive(day, active) {
