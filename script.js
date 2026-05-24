@@ -2,6 +2,7 @@ const STORAGE_KEY = "focus-widget:v1";
 const DEFAULT_TASKS = ["阅读/学习", "项目推进", "运动", "整理记录", "每日复盘"];
 const DEFAULT_CATEGORIES = ["工作", "学习", "项目", "生活", "健康", "其他"];
 const DEFAULT_THEME_COLOR = "#6c5ce7";
+const APP_VERSION = "0.1.0";
 const CATEGORY_HUE_OFFSETS = [0, 42, 318, 198, 82, 142, 274, 24, 226, 302, 118, 176, 16, 250];
 
 const $ = (selector) => document.querySelector(selector);
@@ -9,6 +10,10 @@ const $ = (selector) => document.querySelector(selector);
 const elements = {
   datePicker: $("#datePicker"),
   openFullButton: $("#openFullButton"),
+  versionLabel: $("#versionLabel"),
+  exportDataButton: $("#exportDataButton"),
+  importDataButton: $("#importDataButton"),
+  importDataInput: $("#importDataInput"),
   themeColorInput: $("#themeColorInput"),
   liveClock: $("#liveClock"),
   prevDayButton: $("#prevDayButton"),
@@ -378,6 +383,62 @@ function openInlinePopover({ title, value, confirmText, onConfirm, fields = null
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function getBackupFileName() {
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[T:]/g, "-");
+  return `haoshiguang-backup-${stamp}.json`;
+}
+
+function exportDataBackup() {
+  saveState();
+  const payload = {
+    app: "好时光",
+    appVersion: APP_VERSION,
+    exportedAt: new Date().toISOString(),
+    storageKey: STORAGE_KEY,
+    state
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = getBackupFileName();
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  showToast("已导出数据备份");
+}
+
+function importDataBackup(file) {
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    try {
+      const payload = JSON.parse(String(reader.result || ""));
+      const nextState = payload?.state || payload;
+      if (!nextState || nextState.version !== 1 || !nextState.days) {
+        showToast("这个备份文件不太对");
+        return;
+      }
+      if (!window.confirm("导入后会覆盖当前本地数据，确定继续吗？")) {
+        return;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextState));
+      reloadState();
+      showToast("已导入数据备份");
+    } catch (error) {
+      console.warn("Failed to import backup", error);
+      showToast("导入失败，文件可能已损坏");
+    } finally {
+      elements.importDataInput.value = "";
+    }
+  });
+  reader.readAsText(file);
 }
 
 function getThemeColor() {
@@ -2106,6 +2167,9 @@ function render(options = {}) {
   elements.prevDayButton.classList.toggle("active-date", selectedDateKey === yesterdayKey);
   elements.todayButton.classList.toggle("active-date", selectedDateKey === currentTodayKey);
   elements.nextDayButton.classList.toggle("active-date", selectedDateKey === tomorrowKey);
+  if (elements.versionLabel) {
+    elements.versionLabel.textContent = `v${APP_VERSION}`;
+  }
   elements.taskPanelTitle.textContent = getTaskPanelTitle();
   elements.taskInput.placeholder = getTaskInputPlaceholder();
   elements.currentTitle.textContent = active ? active.title : "还没有开始";
@@ -2309,6 +2373,11 @@ elements.dailyTasksList.addEventListener("click", (event) => {
 });
 elements.themeColorInput.addEventListener("input", (event) => {
   setThemeColor(event.target.value);
+});
+elements.exportDataButton.addEventListener("click", exportDataBackup);
+elements.importDataButton.addEventListener("click", () => elements.importDataInput.click());
+elements.importDataInput.addEventListener("change", (event) => {
+  importDataBackup(event.target.files?.[0]);
 });
 elements.copyReportButton.addEventListener("click", copyReport);
 

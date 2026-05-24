@@ -139,6 +139,34 @@ select:focus {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.version-label {
+  min-height: 30px;
+  padding: 0 9px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.62);
+  font-size: 0.76rem;
+  font-weight: 780;
+  font-variant-numeric: tabular-nums;
+}
+
+.backup-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.backup-actions .ghost {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 0.78rem;
 }
 
 .theme-picker {
