@@ -27,3 +27,5 @@ userData/
 # Temporary files
 *.tmp
 *.temp
+# Local tool workspace
+openclaw-workspace/

@@ -667,7 +667,7 @@ function startActivity(title, category, taskId = null, sourceTodoId = null) {
 
   elements.activityInput.value = "";
   saveState();
-  render();
+  render({ forceActiveSync: true });
 }
 
 function ensureTaskForActivity(day, title, category, taskId = null) {
@@ -2082,7 +2082,8 @@ function escapeHtml(value) {
   });
 }
 
-function render() {
+function render(options = {}) {
+  const forceActiveSync = Boolean(options.forceActiveSync);
   applyTheme();
   const day = getToday();
   const active = day.active;
@@ -2127,16 +2128,16 @@ function render() {
   if (editingCategoryTarget?.kind !== "daily" && !isDailyPanelBusy) {
     renderDailyTasksPanel();
   }
-  if (!editingTodoDateId && editingCategoryTarget?.kind !== "todo" && !isTodoPoolBusy) {
+  if (!editingTodoDateId && editingCategoryTarget?.kind !== "todo" && (forceActiveSync || !isTodoPoolBusy)) {
     renderTodoPool();
   }
-  if (!editingTaskId && editingCategoryTarget?.kind !== "task" && !isTaskListBusy) {
+  if (!editingTaskId && editingCategoryTarget?.kind !== "task" && (forceActiveSync || !isTaskListBusy)) {
     renderTasks(day);
   }
-  if (!elements.categoryStats.matches(":hover") && !editingCategoryTarget) {
+  if ((forceActiveSync || !elements.categoryStats.matches(":hover")) && !editingCategoryTarget) {
     renderCategoryStats(day);
   }
-  if (editingCategoryTarget?.kind !== "record" && !isRecordListBusy) {
+  if (editingCategoryTarget?.kind !== "record" && (forceActiveSync || !isRecordListBusy)) {
     renderRecords(day);
   }
   publishTimerStatus(active, elapsed);
