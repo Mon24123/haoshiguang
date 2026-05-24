@@ -125,6 +125,8 @@ select:focus {
   position: static;
   height: calc(100vh - 64px);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .widget-header,
@@ -141,7 +143,6 @@ select:focus {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
-  align-self: stretch;
 }
 
 .version-label,
@@ -159,8 +160,9 @@ select:focus {
   font-variant-numeric: tabular-nums;
 }
 
-.product-meta {
-  flex: 1 0 100%;
+.widget-footer {
+  margin-top: auto;
+  padding: 0 22px 18px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -1312,8 +1314,7 @@ body.compact-mode .compact-only:hover {
 }
 
 .category-editor.open .category-editor-menu,
-.category-editor:focus-within .category-editor-menu,
-.category-editor:hover .category-editor-menu {
+.category-editor:focus-within .category-editor-menu {
   display: grid;
 }
 
@@ -1621,6 +1622,10 @@ body.compact-mode .eyebrow {
 
 body.compact-mode .finish-note {
   min-height: 136px;
+}
+
+body.compact-mode .widget-footer {
+  padding: 0 18px 14px;
 }
 
 body.compact-mode .date-nav {

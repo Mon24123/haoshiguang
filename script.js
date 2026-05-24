@@ -2457,14 +2457,14 @@ document.addEventListener("click", (event) => {
       && editingCategoryTarget.kind === nextTarget.kind
       && editingCategoryTarget.id === nextTarget.id;
     editingCategoryTarget = isSameTarget ? null : nextTarget;
-    if (nextTarget.kind === "todo" || nextTarget.kind === "daily") {
-      closeCategoryEditorsIn(nextTarget.kind === "todo" ? elements.todoPoolList : elements.dailyTasksList);
-      if (!isSameTarget) {
-        toggle.closest(".category-editor")?.classList.add("open");
+    document.querySelectorAll(".category-editor.open").forEach((editor) => {
+      if (editor !== toggle.closest(".category-editor")) {
+        editor.classList.remove("open");
       }
-      return;
+    });
+    if (!isSameTarget) {
+      toggle.closest(".category-editor")?.classList.add("open");
     }
-    renderCategoryTarget(nextTarget);
     return;
   }
 
