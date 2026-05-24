@@ -1377,6 +1377,30 @@ body.compact-mode .compact-only:hover {
   gap: 10px;
 }
 
+.category-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.category-export-button {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+  border-radius: 999px;
+  color: var(--accent-dark);
+  background: color-mix(in srgb, var(--accent) 7%, white);
+  font-size: 0.76rem;
+  font-weight: 780;
+  cursor: pointer;
+}
+
+.category-export-button:hover {
+  color: #fff;
+  background: var(--accent);
+}
+
 .category-list {
   display: grid;
   gap: 12px;

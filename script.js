@@ -408,7 +408,7 @@ function exportDataBackup() {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  showToast("已导出数据备份");
+  showToast("已备份本地数据");
 }
 
 function importDataBackup(file) {
@@ -1927,6 +1927,37 @@ function resetCategoryInsight() {
   }
 }
 
+function getPeriodRangeText(periodLabel) {
+  const ranges = getPeriodRanges();
+  const range = periodLabel === "日" ? ranges.day : periodLabel === "周" ? ranges.week : ranges.month;
+  return range[0] === range[1] ? range[0] : `${range[0]} 至 ${range[1]}`;
+}
+
+function buildCategoryDetailTable(periodLabel) {
+  const totals = getCategoryTotalsByPeriodLabel(periodLabel);
+  const rangeText = getPeriodRangeText(periodLabel);
+  const rows = [["周期", "日期范围", "分类", "事项", "分钟", "时长"]];
+
+  totals.forEach((categoryTotal) => {
+    const tasks = getTaskTotalsForCategoryPeriod(periodLabel, categoryTotal.name);
+    if (!tasks.length) {
+      rows.push([periodLabel, rangeText, categoryTotal.name, "", String(Math.round(categoryTotal.ms / 60000)), formatDuration(categoryTotal.ms)]);
+      return;
+    }
+
+    tasks.forEach((task) => {
+      rows.push([periodLabel, rangeText, categoryTotal.name, task.title, String(Math.round(task.ms / 60000)), formatDuration(task.ms)]);
+    });
+  });
+
+  return rows.map((row) => row.map((cell) => String(cell).replace(/\t/g, " ").replace(/\r?\n/g, " ")).join("\t")).join("\n");
+}
+
+async function copyCategoryDetailTable(periodLabel = selectedCategoryDetailPeriod || "日") {
+  const text = buildCategoryDetailTable(periodLabel);
+  await navigator.clipboard.writeText(text);
+  showToast(`已复制${periodLabel}分类表格`);
+}
 function renderPeriodCategoryTasks(periodLabel, category, duration, percent) {
   const relatedTasks = getTaskTotalsForCategoryPeriod(periodLabel, category);
   const rows = relatedTasks.length
@@ -2015,7 +2046,10 @@ function renderCategoryDetail(periodLabel) {
 
   const max = Math.max(...totals.map((item) => item.ms));
   detail.innerHTML = `
-    <div class="category-detail-head">${escapeHtml(periodLabel)}分类明细</div>
+    <div class="category-detail-head">
+      <span>${escapeHtml(periodLabel)}分类明细</span>
+      <button class="category-export-button" type="button" data-category-export="${escapeHtml(periodLabel)}">复制表格</button>
+    </div>
     <div class="category-list">
       ${totals
     .map((item) => {
@@ -2803,6 +2837,16 @@ elements.recordList.addEventListener("click", (event) => {
   }
 });
 
+elements.categoryStats.addEventListener("click", (event) => {
+  const exportButton = event.target.closest("[data-category-export]");
+  if (!exportButton) {
+    return;
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+  copyCategoryDetailTable(exportButton.dataset.categoryExport);
+});
 elements.categoryStats.addEventListener("pointerover", (event) => {
   const segment = event.target.closest(".donut-segment, .category-bubble");
   if (segment) {
