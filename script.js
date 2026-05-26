@@ -667,6 +667,17 @@ function formatTime(value) {
   }).format(new Date(value));
 }
 
+function formatRecordSegmentLabel(record) {
+  const durationLabel = formatDuration(record.durationMs);
+  const wallClockMs = record.endedAt - record.startedAt;
+  const isPausedLegacyRecord = Math.abs(wallClockMs - record.durationMs) > 60000;
+  const timeLabel = isPausedLegacyRecord
+    ? `${formatTime(record.startedAt)} 起`
+    : `${formatTime(record.startedAt)}-${formatTime(record.endedAt)}`;
+  const manualLabel = record.manual ? " · 补记" : "";
+  return `${timeLabel} · ${durationLabel}${manualLabel}`;
+}
+
 function getActiveElapsed(active) {
   if (!active) {
     return 0;
@@ -1594,7 +1605,7 @@ function renderRecords(day) {
               ${group.records
     .map((record) => `
                 <span class="record-segment">
-                  <button class="record-segment-time" type="button" data-record-edit="${escapeHtml(record.id)}">${formatTime(record.startedAt)}-${formatTime(record.endedAt)}${record.manual ? " · 补记" : ""}</button>
+                  <button class="record-segment-time" type="button" data-record-edit="${escapeHtml(record.id)}">${escapeHtml(formatRecordSegmentLabel(record))}</button>
                   <span class="record-hover-card">
                     <span class="record-time-editor">
                       <input type="text" value="${escapeHtml(timeInputValue(new Date(record.startedAt)))}" data-record-start="${escapeHtml(record.id)}" aria-label="开始时间" inputmode="numeric" placeholder="20:34" />
