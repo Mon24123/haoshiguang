@@ -285,28 +285,21 @@ function quitApp() {
   app.quit();
 }
 
-function sendStartTask(taskId) {
-  [mainWindow, quickWindow].forEach((targetWindow) => {
-    if (isLiveWindow(targetWindow)) {
-      targetWindow.webContents.send("start-task", taskId);
-    }
-  });
+function getControllerWindow() {
+  if (isLiveWindow(mainWindow)) {
+    return mainWindow;
+  }
+  if (isLiveWindow(quickWindow)) {
+    return quickWindow;
+  }
+  return null;
 }
 
-function sendStartActivity(activity) {
-  [mainWindow, quickWindow].forEach((targetWindow) => {
-    if (isLiveWindow(targetWindow)) {
-      targetWindow.webContents.send("start-activity", activity);
-    }
-  });
-}
-
-function broadcastToPanels(channel) {
-  [mainWindow, quickWindow].forEach((targetWindow) => {
-    if (isLiveWindow(targetWindow)) {
-      targetWindow.webContents.send(channel);
-    }
-  });
+function sendToController(channel, payload) {
+  const targetWindow = getControllerWindow();
+  if (targetWindow) {
+    targetWindow.webContents.send(channel, payload);
+  }
 }
 
 app.whenReady().then(() => {
@@ -340,23 +333,19 @@ app.whenReady().then(() => {
     setBubbleExpanded(expanded);
   });
   ipcMain.on("start-task", (_event, taskId) => {
-    sendStartTask(taskId);
+    sendToController("start-task", taskId);
   });
   ipcMain.on("start-activity", (_event, activity) => {
-    sendStartActivity(activity);
+    sendToController("start-activity", activity);
   });
   ipcMain.on("pause-active", () => {
-    broadcastToPanels("pause-active");
+    sendToController("pause-active");
   });
   ipcMain.on("finish-active", () => {
-    broadcastToPanels("finish-active");
+    sendToController("finish-active");
   });
   ipcMain.on("set-active-note", (_event, note) => {
-    [mainWindow, quickWindow].forEach((targetWindow) => {
-      if (isLiveWindow(targetWindow)) {
-        targetWindow.webContents.send("set-active-note", String(note || ""));
-      }
-    });
+    sendToController("set-active-note", String(note || ""));
   });
   ipcMain.on("timer-status", (_event, status) => {
     latestTimerStatus = status;

@@ -64,7 +64,7 @@ function renderStatus(status) {
     receivedAt: Number(status?.statusSentAt) || Date.now()
   };
 
-  applyTheme(status?.themeColor || "#6c5ce7");
+  applyTheme(status?.themeColor || "#7fcdb5");
   miniWidget.classList.toggle("active", active);
   miniWidget.classList.toggle("paused", Boolean(status?.paused));
   miniTitle.textContent = active ? status.title : "准备记录";

@@ -1,7 +1,7 @@
 const STORAGE_KEY = "focus-widget:v1";
 const DEFAULT_TASKS = ["阅读/学习", "项目推进", "运动", "整理记录", "每日复盘"];
 const DEFAULT_CATEGORIES = ["工作", "学习", "项目", "生活", "健康", "其他"];
-const DEFAULT_THEME_COLOR = "#6c5ce7";
+const DEFAULT_THEME_COLOR = "#7fcdb5";
 const APP_VERSION = "0.2.2";
 const CATEGORY_HUE_OFFSETS = [0, 42, 318, 198, 82, 142, 274, 24, 226, 302, 118, 176, 16, 250];
 
@@ -781,7 +781,7 @@ function togglePause() {
   }
 
   saveState();
-  render();
+  render({ forceActiveSync: true });
 }
 
 function finishActivity() {
