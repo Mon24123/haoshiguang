@@ -112,7 +112,8 @@ let lastDailyTasksMarkup = "";
 let draggedCategory = null;
 let lastCategoryInsightKey = "";
 
-if (new URLSearchParams(window.location.search).get("mode") === "compact") {
+const isCompactMode = new URLSearchParams(window.location.search).get("mode") === "compact";
+if (isCompactMode) {
   document.body.classList.add("compact-mode");
 }
 
@@ -2350,7 +2351,7 @@ function render(options = {}) {
 }
 
 function publishTimerStatus(active, elapsed) {
-  if (!window.focusWidget) {
+  if (!window.focusWidget || isCompactMode) {
     return;
   }
 
