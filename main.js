@@ -286,19 +286,29 @@ function quitApp() {
 }
 
 function getControllerWindow() {
-  if (isLiveWindow(mainWindow)) {
-    return mainWindow;
+  if (!isLiveWindow(mainWindow) && app.isReady()) {
+    createMainWindow();
   }
-  if (isLiveWindow(quickWindow)) {
-    return quickWindow;
-  }
-  return null;
+
+  return isLiveWindow(mainWindow) ? mainWindow : null;
 }
 
 function sendToController(channel, payload) {
   const targetWindow = getControllerWindow();
-  if (targetWindow) {
-    targetWindow.webContents.send(channel, payload);
+  if (!targetWindow) {
+    return;
+  }
+
+  const send = () => {
+    if (isLiveWindow(targetWindow)) {
+      targetWindow.webContents.send(channel, payload);
+    }
+  };
+
+  if (targetWindow.webContents.isLoading()) {
+    targetWindow.webContents.once("did-finish-load", send);
+  } else {
+    send();
   }
 }
 
